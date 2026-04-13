@@ -130,11 +130,11 @@
                 <p class="text-purple-300 text-sm">กรุณากดไลค์วิดิโอบน Youtube ให้เสร็จสิ้น แล้วกลับมาที่หน้านี้</p>
             </div>
 
-            <!-- Step 3: Error Content (If return too fast) -->
+            <!-- Step 3: Error Content -->
             <div id="modal-error-content" class="hidden">
                 <div class="text-5xl mb-4">❌</div>
                 <h2 class="text-xl font-bold mb-2 text-red-400">ทำรายการไม่ถูกต้อง!</h2>
-                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube</p>
+                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube (กรุณาอยู่ในหน้าวิดิโอให้นานขึ้น)</p>
                 <button 
                     onclick="resetProcess()"
                     class="w-full red-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95"
@@ -143,7 +143,7 @@
                 </button>
             </div>
 
-            <!-- Step 4: Loading Content (The Fake Check) -->
+            <!-- Step 4: Loading Content -->
             <div id="modal-loading-content" class="hidden">
                 <div class="text-4xl mb-4 animate-bounce">🔍</div>
                 <h2 class="text-xl font-bold mb-2 text-white">กำลังเช็คความถูกต้อง...</h2>
@@ -190,13 +190,9 @@
                 </button>
             </div>
             <div class="p-0 relative group">
-                <pre class="language-lua"><code id="lua-code-1">
-                    -- คัดลอกห้ามกดแปลภาษานะครับ
-                    
-                     loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/BoundDT.lua"))()
-
-                    -- สามารถนำไปใส่ตัวรันเล่นได้เลย
-                </code></pre>
+                <pre class="language-lua"><code id="lua-code-1">-- คัดลอกห้ามกดแปลภาษานะครับ
+loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/BoundDT.lua"))()
+-- สามารถนำไปใส่ตัวรันเล่นได้เลย</code></pre>
             </div>
         </div>
 
@@ -229,12 +225,13 @@
     <script>
         let startTime = 0;
         let isWaitingForReturn = false;
-        const MIN_WAIT_TIME = 5000; // เวลาขั้นต่ำที่ต้องอยู่ใน YouTube (5 วินาที)
+        let hasLeftPage = false; // บ่งบอกว่าผู้ใช้สลับหน้าจอสำเร็จหรือยัง
+        const MIN_WAIT_TIME = 5000; // 5 วินาที
         const youtubeLink = "https://www.youtube.com/watch?v=34FdHI0z5zY"; 
 
         function redirectToYoutube() {
-            startTime = Date.now();
             isWaitingForReturn = true;
+            hasLeftPage = false; 
             window.open(youtubeLink, '_blank');
 
             // เปลี่ยนหน้าตาเป็น "รอคุณกลับมา"
@@ -242,10 +239,20 @@
             document.getElementById('modal-waiting-content').classList.remove('hidden');
         }
 
-        // ตรวจจับเมื่อผู้ใช้กลับมาที่หน้าเว็บ
+        // หัวใจสำคัญ: ตรวจจับการเปลี่ยนแปลงการมองเห็นของหน้าเว็บ
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isWaitingForReturn) {
-                processReturn();
+            if (isWaitingForReturn) {
+                if (document.visibilityState === 'hidden') {
+                    // 1. หน้าเว็บพับเก็บจริงๆ แล้ว -> เริ่มจับเวลา ณ ตอนนี้
+                    startTime = Date.now();
+                    hasLeftPage = true;
+                } else if (document.visibilityState === 'visible' && hasLeftPage) {
+                    // 2. ผู้ใช้กลับมาหลังจากที่หน้าเว็บเคยพับเก็บไปแล้ว
+                    processReturn();
+                } else if (document.visibilityState === 'visible' && !hasLeftPage) {
+                    // กรณีกลับมาโดยที่หน้าเว็บยังไม่ทันพับเก็บ (เช่น กดแล้ว Cancel หรือเครื่องค้าง)
+                    // เราจะยังไม่ทำอะไร รอให้เขาไปจริงๆ ก่อน
+                }
             }
         });
 
@@ -256,22 +263,23 @@
             document.getElementById('modal-waiting-content').classList.add('hidden');
 
             if (elapsedTime < MIN_WAIT_TIME) {
-                // กลับมาเร็วเกินไป แสดง Error
+                // อยู่ในหน้ายูทูปไม่ถึง 5 วินาที
                 document.getElementById('modal-error-content').classList.remove('hidden');
             } else {
-                // เวลาผ่านไปนานพอ เริ่มโหลดหลอกๆ
+                // ผ่านเงื่อนไข
                 startFakeLoading();
             }
         }
 
         function resetProcess() {
+            startTime = 0;
+            hasLeftPage = false;
             document.getElementById('modal-error-content').classList.add('hidden');
             document.getElementById('modal-initial-content').classList.remove('hidden');
         }
 
         function startFakeLoading() {
             document.getElementById('modal-loading-content').classList.remove('hidden');
-
             let progress = 0;
             const bar = document.getElementById('loading-bar');
             
@@ -290,7 +298,6 @@
             const modal = document.getElementById('unlock-modal');
             modal.style.transition = 'opacity 0.5s ease';
             modal.style.opacity = '0';
-            
             setTimeout(() => {
                 modal.style.display = 'none';
                 document.body.classList.remove('modal-open');
