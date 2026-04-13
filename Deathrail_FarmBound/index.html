@@ -114,7 +114,7 @@
             <div id="modal-initial-content">
                 <div class="text-5xl mb-4">📢</div>
                 <h2 class="text-2xl font-bold mb-2 text-white">ปลดล็อคสคริปต์</h2>
-                <p class="text-purple-300 mb-6 text-sm">กรุณากดติดตามและไลค์คลิปล่าสุด เพื่อรับสคริปต์ฟรีจาก Somtank</p>
+                <p class="text-purple-300 mb-6 text-sm">กรุณากดไลค์คลิป เพื่อรับสคริปต์ฟรี</p>
                 <button 
                     onclick="redirectToYoutube()"
                     class="w-full purple-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95"
@@ -127,14 +127,14 @@
             <div id="modal-waiting-content" class="hidden">
                 <div class="text-5xl mb-4 animate-pulse">⏳</div>
                 <h2 class="text-xl font-bold mb-2 text-white">รอคุณกลับมา...</h2>
-                <p class="text-purple-300 text-sm">กรุณาทำกิจกรรมใน YouTube ให้เสร็จสิ้น แล้วกลับมาที่หน้านี้</p>
+                <p class="text-purple-300 text-sm">กรุณากดไลค์วิดิโอบน Youtube ให้เสร็จสิ้น แล้วกลับมาที่หน้านี้</p>
             </div>
 
             <!-- Step 3: Error Content (If return too fast) -->
             <div id="modal-error-content" class="hidden">
                 <div class="text-5xl mb-4">❌</div>
                 <h2 class="text-xl font-bold mb-2 text-red-400">ทำรายการไม่ถูกต้อง!</h2>
-                <p class="text-gray-300 text-sm mb-6">คุณกลับมาเร็วเกินไป ระบบตรวจพบว่าคุณยังไม่ได้ทำกิจกรรมจนเสร็จสิ้น</p>
+                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube</p>
                 <button 
                     onclick="resetProcess()"
                     class="w-full red-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95"
