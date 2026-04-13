@@ -225,11 +225,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7A
     <script>
         let startTime = 0;
         let isWaitingForReturn = false;
-        let hasLeftPage = false; // บ่งบอกว่าผู้ใช้สลับหน้าจอสำเร็จหรือยัง
+        let hasLeftPage = false; 
+        let clickTime = 0; // บันทึกเวลาที่กดปุ่ม
+
         const MIN_WAIT_TIME = 5000; // 5 วินาที
+        const GRACE_PERIOD = 2000; // 2 วินาที (ป้องกันการกระพริบของ Browser)
         const youtubeLink = "https://www.youtube.com/watch?v=34FdHI0z5zY"; 
 
         function redirectToYoutube() {
+            clickTime = Date.now();
             isWaitingForReturn = true;
             hasLeftPage = false; 
             window.open(youtubeLink, '_blank');
@@ -239,19 +243,20 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7A
             document.getElementById('modal-waiting-content').classList.remove('hidden');
         }
 
-        // หัวใจสำคัญ: ตรวจจับการเปลี่ยนแปลงการมองเห็นของหน้าเว็บ
         document.addEventListener('visibilitychange', () => {
             if (isWaitingForReturn) {
+                const now = Date.now();
+                
                 if (document.visibilityState === 'hidden') {
-                    // 1. หน้าเว็บพับเก็บจริงๆ แล้ว -> เริ่มจับเวลา ณ ตอนนี้
-                    startTime = Date.now();
+                    // เริ่มนับเวลาเมื่อหน้าเว็บหายไปจริงๆ
+                    startTime = now;
                     hasLeftPage = true;
-                } else if (document.visibilityState === 'visible' && hasLeftPage) {
-                    // 2. ผู้ใช้กลับมาหลังจากที่หน้าเว็บเคยพับเก็บไปแล้ว
-                    processReturn();
-                } else if (document.visibilityState === 'visible' && !hasLeftPage) {
-                    // กรณีกลับมาโดยที่หน้าเว็บยังไม่ทันพับเก็บ (เช่น กดแล้ว Cancel หรือเครื่องค้าง)
-                    // เราจะยังไม่ทำอะไร รอให้เขาไปจริงๆ ก่อน
+                } 
+                else if (document.visibilityState === 'visible') {
+                    // เช็คว่าการกลับมาครั้งนี้ ไม่ใช่การ "กระพริบ" หลังจากกดปุ่มทันที
+                    if (now - clickTime > GRACE_PERIOD && hasLeftPage) {
+                        processReturn();
+                    }
                 }
             }
         });
@@ -262,11 +267,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7A
 
             document.getElementById('modal-waiting-content').classList.add('hidden');
 
+            // ถ้าอยู่ข้างนอกน้อยกว่า 5 วินาที (ไม่รวมเวลาสลับแอป 2 วิแรก) ถือว่าไม่ผ่าน
             if (elapsedTime < MIN_WAIT_TIME) {
-                // อยู่ในหน้ายูทูปไม่ถึง 5 วินาที
                 document.getElementById('modal-error-content').classList.remove('hidden');
             } else {
-                // ผ่านเงื่อนไข
                 startFakeLoading();
             }
         }
@@ -274,6 +278,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7A
         function resetProcess() {
             startTime = 0;
             hasLeftPage = false;
+            clickTime = 0;
             document.getElementById('modal-error-content').classList.add('hidden');
             document.getElementById('modal-initial-content').classList.remove('hidden');
         }
