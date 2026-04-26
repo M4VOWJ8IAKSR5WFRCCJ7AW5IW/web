@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somtank - สคริปต์ฟรีสำหรับคนไทย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js for Lua Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #0f0a1a;
+            color: #e2e2e2;
+            overflow-x: hidden;
+            /* ปิดการคลุมดำข้อความบางส่วนเพื่อกันก๊อปปี้ก่อนกำหนด */
+            user-select: none; 
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* พื้นหลังแบบวิดีโอ */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.6; /* ปรับความสว่างวิดีโอตรงนี้ */
+        }
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 10, 26, 0.75); /* สีทับวิดีโอให้อ่านง่าย */
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: rgba(30, 20, 50, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+        }
+
+        .purple-gradient {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        }
+
+        .red-gradient {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 10px; }
+
+        pre[class*="language-"] {
+            margin: 0 !important;
+            border-radius: 0 0 0.5rem 0.5rem !important;
+            background: rgba(20, 15, 30, 0.85) !important;
+            font-size: 14px !important;
+            overflow-x: auto;
+            user-select: text; /* อนุญาตให้คลุมดำโค้ดได้ */
+        }
+
+        .copy-feedback {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        #unlock-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: #7c3aed;
+            box-shadow: 0 0 15px #7c3aed;
+            transition: width 0.2s ease-out;
+        }
+
+        /* เพิ่มเอฟเฟกต์สั่นเตือนเวลากดรัวๆ */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .shake-animation {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-10 px-4 modal-open">
+
+    <!-- พื้นหลังวิดีโอ -->
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source src="https://raw.githubusercontent.com/somtdays-cmd/Info-web/main/111111.mov" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- Unlock Modal (ระบบปลดล็อคสคริปต์) -->
+    <div id="unlock-modal">
+        <div class="glass-card w-full max-w-sm p-8 rounded-3xl text-center max-h-[90vh] overflow-y-auto">
+            
+            <!-- Step 1: Initial (วิธีแรก) -->
+            <div id="modal-initial-content">
+                <div class="text-5xl mb-4">📢</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">ปลดล็อคสคริปต์</h2>
+                <p class="text-purple-300 mb-6 text-sm">กรุณากดไลค์คลิป เพื่อรับสคริปต์ฟรี</p>
+                <button 
+                    onclick="redirectToYoutube()"
+                    class="w-full purple-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95 mb-4"
+                >
+                    กดไลค์เพื่อปลดล็อค
+                </button>
+                <!-- ปุ่มสำหรับไปวิธีที่สอง (วิธีสำรอง) -->
+                <button onclick="showAltMethod()" class="text-gray-400 hover:text-white underline text-sm transition-colors">
+                    คลิกไม่ได้หรือบัค? ลองวิธีอื่น
+                </button>
+            </div>
+
+            <!-- Step 2: Waiting for Return (วิธีแรก) -->
+            <div id="modal-waiting-content" class="hidden">
+                <div class="text-5xl mb-4 animate-pulse">⏳</div>
+                <h2 class="text-xl font-bold mb-2 text-white">รอคุณกลับมา...</h2>
+                <p class="text-purple-300 text-sm mb-6">กรุณากดไลค์วิดิโอบน Youtube ให้เสร็จสิ้น แล้วกลับมาที่หน้านี้</p>
+            </div>
+
+            <!-- Step 3: Error Content -->
+            <div id="modal-error-content" class="hidden">
+                <div class="text-5xl mb-4">❌</div>
+                <h2 class="text-xl font-bold mb-2 text-red-400">ทำรายการไม่ถูกต้อง!</h2>
+                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube (กรุณาอยู่ในหน้าวิดิโอให้นานขึ้น)</p>
+                <button 
+                    onclick="resetProcess()"
+                    class="w-full red-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95"
+                >
+                    ลองใหม่อีกครั้ง
+                </button>
+                <button onclick="showAltMethod()" class="text-gray-400 hover:text-white underline text-sm mt-4 transition-colors">
+                    ลองวิธีอื่น (ชัวร์กว่า)
+                </button>
+            </div>
+
+            <!-- Step: Alternative Method (วิธีที่ 2) -->
+            <div id="modal-alt-content" class="hidden text-left">
+                <div class="text-center mb-4">
+                    <div class="text-4xl mb-2">🎥</div>
+                    <h2 class="text-xl font-bold text-white">วิธีปลดล็อคแบบที่ 2</h2>
+                    <p class="text-xs text-purple-300 mt-1">กดเข้าไปดูให้ครบทั้ง 5 คลิป ระบบจะใช้เวลาเช็คสักครู่ในแต่ละคลิป</p>
+                </div>
+                <!-- คอนเทนเนอร์ใส่ปุ่ม 5 ปุ่ม จะถูกสร้างโดย JS -->
+                <div class="space-y-3" id="alt-tasks-container"></div>
+                
+                <button onclick="resetProcess()" class="w-full text-center text-gray-400 hover:text-white underline text-xs mt-6">
+                    กลับไปใช้วิธีแรก
+                </button>
+            </div>
+
+            <!-- Step 4: Loading Content (ตรวจสอบสำเร็จ) -->
+            <div id="modal-loading-content" class="hidden text-center">
+                <div class="text-4xl mb-4 animate-bounce">🔍</div>
+                <h2 class="text-xl font-bold mb-2 text-white">กำลังเช็คความถูกต้อง...</h2>
+                <p class="text-sm text-purple-300 opacity-70">รอสักครู่ ระบบกำลังตรวจสอบข้อมูล</p>
+                <div class="progress-bar-container">
+                    <div id="loading-bar" class="progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast แจ้งเตือนเมื่อคัดลอกสำเร็จ -->
+    <div id="copy-toast" class="copy-feedback">
+        คัดลอกสคริปต์แล้ว! ✨
+    </div>
+
+    <!-- ส่วนหัวข้อเว็บไซต์ (Title) -->
+    <header class="text-center mb-8 w-full mt-4">
+        <h1 class="text-3xl md:text-5xl font-bold mb-4 text-white leading-tight drop-shadow-lg">
+            Somtank <br class="md:hidden"> <span class="text-purple-400">สคริปต์ฟรีสำหรับคนไทย</span>
+        </h1>
+        <p class="text-purple-200 opacity-90 text-base md:text-lg px-4 drop-shadow">รวบรวมสคริปต์ Lua คุณภาพดี ใช้งานง่าย และฟรี 100%</p>
+    </header>
+
+    <!-- ส่วนแถบโฆษณา (ซ่อนไว้ก่อนตามคำขอ เอาคลาส hidden ออกเพื่อโชว์) -->
+    <div class="w-full max-w-4xl mb-10 px-2 flex flex-col gap-4 hidden" id="ad-section">
+        <!-- โฆษณาที่ 1: RoyX Promotion -->
+        <a href="https://royx.net/" target="_blank" class="block group">
+            <div class="relative overflow-hidden rounded-2xl border border-purple-500/30 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
+                <img 
+                    src="https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/web/refs/heads/main/image/RoyX%20Promotion.jpg" 
+                    alt="โปรโมชั่น RoyX" 
+                    class="w-full h-auto block object-cover group-hover:scale-[1.01] transition-transform duration-500"
+                />
+                <div class="absolute inset-0 bg-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            </div>
+        </a>
+        <!-- ใส่โฆษณาเพิ่มตรงนี้ -->
+    </div>
+
+    <!-- ส่วนแสดงสคริปต์หลัก -->
+    <main class="w-full max-w-4xl">
+        <div class="glass-card rounded-2xl overflow-hidden mb-8 shadow-[0_0_30px_rgba(76,29,149,0.3)]">
+            <div class="p-4 md:p-5 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-purple-500/30 bg-black/20">
+                <div class="flex items-center space-x-3 w-full md:w-auto">
+                    <div class="flex space-x-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_5px_red]"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_5px_yellow]"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_5px_green]"></div>
+                    </div>
+                    <span class="ml-2 text-sm font-mono text-purple-200 truncate">main_script.lua</span>
+                </div>
+                <button 
+                    onclick="copyScript('lua-code-1')" 
+                    class="w-full md:w-auto purple-gradient hover:opacity-90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                    </svg>
+                    คัดลอกสคริปต์
+                </button>
+            </div>
+            <div class="p-0 relative group">
+                <!-- สคริปต์หลอกตาก่อนปลดล็อค ป้องกัน F12 -->
+                <pre class="language-lua"><code id="lua-code-1">-- [ล็อคอยู่] กรุณาทำกิจกรรมปลดล็อคให้เสร็จสิ้นก่อน
+-- ************************************
+-- dsjfklasjdfklajsdklfjaklsdfj82390482390
+-- error_code: NOT_UNLOCKED
+-- xxxxx_obfuscated_xxxxx
+-- ************************************</code></pre>
+            </div>
+        </div>
+
+        <!-- รายละเอียดฟีเจอร์ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <div class="glass-card p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
+                <div class="text-purple-400 text-3xl mb-3 drop-shadow-[0_0_10px_rgba(167,139,250,0.5)]">⚡</div>
+                <h3 class="font-bold mb-2">ความเร็วสูง</h3>
+                <p class="text-sm opacity-80">โค้ดถูกปรับแต่งให้ทำงานได้อย่างรวดเร็ว ไม่หน่วงเครื่อง</p>
+            </div>
+            <div class="glass-card p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
+                <div class="text-purple-400 text-3xl mb-3 drop-shadow-[0_0_10px_rgba(167,139,250,0.5)]">🛡️</div>
+                <h3 class="font-bold mb-2">ปลอดภัย</h3>
+                <p class="text-sm opacity-80">ตรวจสอบโค้ดทุกบรรทัด มั่นใจได้ว่าไม่มีมัลแวร์</p>
+            </div>
+            <div class="glass-card p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
+                <div class="text-purple-400 text-3xl mb-3 drop-shadow-[0_0_10px_rgba(167,139,250,0.5)]">💎</div>
+                <h3 class="font-bold mb-2">อัปเดตเสมอ</h3>
+                <p class="text-sm opacity-80">มีทีมงานคอยอัปเดตสคริปต์ให้ใช้งานได้ตลอดเวลา</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-12 md:mt-20 text-purple-300/50 text-xs md:text-sm text-center drop-shadow">
+        &copy; 2024 Somtank Hub. สร้างขึ้นด้วยความภูมิใจเพื่อคนไทย
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-lua.min.js"></script>
+
+    <script>
+        // ==========================================
+        // ระบบความปลอดภัย (ป้องกัน F12 / คลิกขวา)
+        // ==========================================
+        document.addEventListener('contextmenu', event => event.preventDefault()); // ปิดคลิกขวา
+        document.onkeydown = function (e) {
+            // ป้องกัน F12
+            if (e.keyCode == 123) return false;
+            // ป้องกัน Ctrl+Shift+I / J / C
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) return false;
+            // ป้องกัน Ctrl+U (View Source)
+            if (e.ctrlKey && e.keyCode == 85) return false;
+        };
+
+        // สคริปต์ของจริง (จะโผล่มาก็ต่อเมื่อผ่านเงื่อนไข)
+        const REAL_SCRIPT = `-- คัดลอกห้ามกดแปลภาษานะครับ
+loadstring(game:HttpGet('https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/Jujutsu%20Shenanigans-obfuscated.lua'))()
+-- สามารถนำไปใส่ตัวรันเล่นได้เลย`;
+
+        // ==========================================
+        // ระบบวิธีที่ 1 (เช็คการสลับหน้าต่าง)
+        // ==========================================
+        let startTime = 0;
+        let isWaitingForReturn = false;
+        let hasLeftPage = false; 
+        let clickTime = 0; 
+        const MIN_WAIT_TIME = 5000; 
+        const GRACE_PERIOD = 2000; 
+        const mainYoutubeLink = "https://www.youtube.com/watch?v=QhYDU-nVmlU&t=28s"; 
+
+        function redirectToYoutube() {
+            clickTime = Date.now();
+            isWaitingForReturn = true;
+            hasLeftPage = false; 
+            window.open(mainYoutubeLink, '_blank');
+
+            document.getElementById('modal-initial-content').classList.add('hidden');
+            document.getElementById('modal-waiting-content').classList.remove('hidden');
+            document.getElementById('modal-alt-content').classList.add('hidden');
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (isWaitingForReturn) {
+                const now = Date.now();
+                if (document.visibilityState === 'hidden') {
+                    startTime = now;
+                    hasLeftPage = true;
+                } 
+                else if (document.visibilityState === 'visible') {
+                    if (now - clickTime > GRACE_PERIOD && hasLeftPage) {
+                        processReturn();
+                    }
+                }
+            }
+        });
+
+        function processReturn() {
+            isWaitingForReturn = false;
+            const elapsedTime = Date.now() - startTime;
+            document.getElementById('modal-waiting-content').classList.add('hidden');
+
+            if (elapsedTime < MIN_WAIT_TIME) {
+                document.getElementById('modal-error-content').classList.remove('hidden');
+            } else {
+                startFakeLoading();
+            }
+        }
+
+        function resetProcess() {
+            startTime = 0;
+            hasLeftPage = false;
+            clickTime = 0;
+            document.getElementById('modal-error-content').classList.add('hidden');
+            document.getElementById('modal-alt-content').classList.add('hidden');
+            document.getElementById('modal-initial-content').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // ระบบวิธีที่ 2 (5 คลิป ไม่มีเช็คเวลาออก แต่โหลดนาน)
+        // ==========================================
+        const altVideos = [
+            "https://www.youtube.com/watch?v=bwkZo2ar--o&t=57s",
+            "https://www.youtube.com/watch?v=wAXHBOpNJGY&t=148s",
+            "https://www.youtube.com/watch?v=Tm9e48h3f9I&t=59s",
+            "https://www.youtube.com/watch?v=vMcLM04OdT0&t=3s",
+            "https://www.youtube.com/watch?v=QhYDU-nVmlU&lc=UgxFARQn0erGVq4N1cd4AaABAg.AVbFdb_P9MrAVbQDwHbU4l"
+        ];
+        let completedAltTasks = 0;
+        let isAltTaskProcessing = false; // เพิ่มตัวแปรสำหรับเช็คว่ามีคลิปกำลังตรวจสอบอยู่ไหม
+
+        function showAltMethod() {
+            isWaitingForReturn = false; // ปิดการจับผิดของวิธีแรก
+            isAltTaskProcessing = false; // รีเซ็ตสถานะ
+            document.getElementById('modal-initial-content').classList.add('hidden');
+            document.getElementById('modal-error-content').classList.add('hidden');
+            document.getElementById('modal-alt-content').classList.remove('hidden');
+            renderAltTasks();
+        }
+
+        function renderAltTasks() {
+            const container = document.getElementById('alt-tasks-container');
+            container.innerHTML = '';
+            completedAltTasks = 0; // รีเซ็ต
+            isAltTaskProcessing = false; // รีเซ็ตสถานะ
+
+            altVideos.forEach((url, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full flex justify-between items-center bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-lg transition-all border border-transparent hover:border-purple-500/50';
+                btn.innerHTML = `<span class="font-semibold text-sm">กดไลค์คลิป ${index + 1}</span> <span class="text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded-md shadow">ดูคลิป</span>`;
+                btn.onclick = () => handleAltTask(index, url, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAltTask(index, url, btn) {
+            if(btn.disabled) return;
+            
+            // เช็คว่ามีวิดีโออื่นกำลังตรวจสอบอยู่หรือไม่ (กันคนกดรัว)
+            if(isAltTaskProcessing) {
+                // เพิ่มเอฟเฟกต์สั่นที่ปุ่มเพื่อให้รู้ว่าไม่ได้ค้าง
+                btn.classList.add('shake-animation');
+                setTimeout(() => btn.classList.remove('shake-animation'), 300);
+                
+                showToast('ระบบกำลังตรวจสอบคลิปก่อนหน้า โปรดรอสักครู่! ⏳', '#ef4444');
+                return;
+            }
+            
+            isAltTaskProcessing = true; // ล็อคไม่ให้กดปุ่มอื่น
+
+            // เปิดคลิป
+            window.open(url, '_blank');
+            
+            // เปลี่ยนสถานะปุ่ม
+            btn.disabled = true;
+            btn.className = 'w-full flex justify-between items-center bg-purple-900/40 text-purple-300 px-4 py-3 rounded-lg border border-purple-500/30 cursor-not-allowed';
+            btn.innerHTML = `<span class="font-semibold text-sm">กดไลค์คลิป ${index + 1}</span> <span class="text-xs animate-pulse">กำลังตรวจสอบ...</span>`;
+
+            // สุ่มเวลา 4 - 8 วินาที (4000ms - 8000ms)
+            const randomDelay = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
+
+            setTimeout(() => {
+                btn.className = 'w-full flex justify-between items-center bg-green-900/30 text-green-400 px-4 py-3 rounded-lg border border-green-500/30';
+                btn.innerHTML = `<span class="font-semibold text-sm">กดไลค์คลิป ${index + 1}</span> <span class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-md">✔ ผ่านแล้ว</span>`;
+                
+                isAltTaskProcessing = false; // ปลดล็อคให้กดปุ่มต่อไปได้
+                completedAltTasks++;
+                
+                if (completedAltTasks === altVideos.length) {
+                    setTimeout(() => {
+                        document.getElementById('modal-alt-content').classList.add('hidden');
+                        startFakeLoading();
+                    }, 800);
+                }
+            }, randomDelay); // ใช้เวลาสุ่มแทนเวลาคงที่
+        }
+
+        // ==========================================
+        // ระบบปลดล็อค
+        // ==========================================
+        function startFakeLoading() {
+            document.getElementById('modal-loading-content').classList.remove('hidden');
+            let progress = 0;
+            const bar = document.getElementById('loading-bar');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(finishUnlock, 600);
+                }
+                bar.style.width = progress + '%';
+            }, 250);
+        }
+
+        function revealRealScript() {
+            const codeBox = document.getElementById('lua-code-1');
+            codeBox.textContent = REAL_SCRIPT;
+            Prism.highlightElement(codeBox); // ใส่สีให้โค้ดใหม่
+        }
+
+        function finishUnlock() {
+            const modal = document.getElementById('unlock-modal');
+            modal.style.transition = 'opacity 0.5s ease';
+            modal.style.opacity = '0';
+            
+            // เอาสคริปต์จริงมาแสดง
+            revealRealScript();
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                sessionStorage.setItem('somtank_unlocked', 'true');
+            }, 500);
+        }
+
+        // เช็คสถานะตอนเปิดหน้าเว็บ
+        window.onload = function() {
+            if (sessionStorage.getItem('somtank_unlocked') === 'true') {
+                document.getElementById('unlock-modal').style.display = 'none';
+                document.body.classList.remove('modal-open');
+                revealRealScript(); // ถ้าปลดล็อคแล้ว ให้แสดงโค้ดจริงเลย
+            }
+        };
+
+        // คัดลอก
+        function copyScript(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const textArea = document.createElement("textarea");
+            textArea.value = codeElement.innerText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast('คัดลอกสคริปต์แล้ว! ✨', '#10b981'); // ส่งสีเขียวเข้าไป
+        }
+
+        // ปรับแต่งให้ Toast รับข้อความและสีพื้นหลังได้
+        function showToast(message = 'คัดลอกสคริปต์แล้ว! ✨', bgColor = '#10b981') {
+            const toast = document.getElementById('copy-toast');
+            toast.innerText = message;
+            toast.style.background = bgColor;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+    </script>
+</body>
+</html>
