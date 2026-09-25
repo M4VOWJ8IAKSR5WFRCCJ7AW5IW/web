@@ -9,14 +9,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
-        
+
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #0f0a1a;
             color: #e2e2e2;
             overflow-x: hidden;
             /* ปิดการคลุมดำข้อความบางส่วนเพื่อกันก๊อปปี้ก่อนกำหนด */
-            user-select: none; 
+            user-select: none;
         }
 
         body.modal-open {
@@ -144,13 +144,13 @@
     <!-- Unlock Modal (ระบบปลดล็อคสคริปต์) -->
     <div id="unlock-modal">
         <div class="glass-card w-full max-w-sm p-8 rounded-3xl text-center max-h-[90vh] overflow-y-auto">
-            
+
             <!-- Step 1: Initial (วิธีแรก) -->
             <div id="modal-initial-content">
                 <div class="text-5xl mb-4">📢</div>
                 <h2 class="text-2xl font-bold mb-2 text-white">ปลดล็อคสคริปต์</h2>
                 <p class="text-purple-300 mb-6 text-sm">กรุณากดไลค์คลิป เพื่อรับสคริปต์ฟรี</p>
-                <button 
+                <button
                     onclick="redirectToYoutube()"
                     class="w-full purple-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95 mb-4"
                 >
@@ -173,8 +173,8 @@
             <div id="modal-error-content" class="hidden">
                 <div class="text-5xl mb-4">❌</div>
                 <h2 class="text-xl font-bold mb-2 text-red-400">ทำรายการไม่ถูกต้อง!</h2>
-                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube (กรุณาอยู่ในหน้าวิดิโอให้นานขึ้น)</p>
-                <button 
+                <p class="text-gray-300 text-sm mb-6">ระบบตรวจพบว่าคุณยังไม่ได้กดไลค์วิดิโอบน Youtube</p>
+                <button
                     onclick="resetProcess()"
                     class="w-full red-gradient text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition-transform active:scale-95"
                 >
@@ -194,7 +194,7 @@
                 </div>
                 <!-- คอนเทนเนอร์ใส่ปุ่ม 5 ปุ่ม จะถูกสร้างโดย JS -->
                 <div class="space-y-3" id="alt-tasks-container"></div>
-                
+
                 <button onclick="resetProcess()" class="w-full text-center text-gray-400 hover:text-white underline text-xs mt-6">
                     กลับไปใช้วิธีแรก
                 </button>
@@ -230,9 +230,9 @@
         <!-- โฆษณาที่ 1: RoyX Promotion -->
         <a href="https://royx.net/" target="_blank" class="block group">
             <div class="relative overflow-hidden rounded-2xl border border-purple-500/30 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
-                <img 
-                    src="https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/web/refs/heads/main/image/RoyX%20Promotion.jpg" 
-                    alt="โปรโมชั่น RoyX" 
+                <img
+                    src="https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/web/refs/heads/main/image/RoyX%20Promotion.jpg"
+                    alt="โปรโมชั่น RoyX"
                     class="w-full h-auto block object-cover group-hover:scale-[1.01] transition-transform duration-500"
                 />
                 <div class="absolute inset-0 bg-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
@@ -253,8 +253,8 @@
                     </div>
                     <span class="ml-2 text-sm font-mono text-purple-200 truncate">main_script.lua</span>
                 </div>
-                <button 
-                    onclick="copyScript('lua-code-1')" 
+                <button
+                    onclick="copyScript('lua-code-1')"
                     class="w-full md:w-auto purple-gradient hover:opacity-90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -266,7 +266,7 @@
             </div>
             <div class="p-0 relative group">
                 <!-- สคริปต์หลอกตาก่อนปลดล็อค ป้องกัน F12 -->
-                <pre class="language-lua"><code id="lua-code-1">-- [ล็อคอยู่] กรุณาทำกิจกรรมปลดล็อคให้เสร็จสิ้นก่อน
+                <pre class="language-lua"><code id="lua-code-1">-- สคริปกากๆลาวๆลาบๆ ควย
 -- ************************************
 -- dsjfklasjdfklajsdklfjaklsdfj82390482390
 -- error_code: NOT_UNLOCKED
@@ -318,25 +318,50 @@
 
         // สคริปต์ของจริง (จะโผล่มาก็ต่อเมื่อผ่านเงื่อนไข)
         const REAL_SCRIPT = `-- คัดลอกห้ามกดแปลภาษานะครับ
-loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remake-by-somtank.lua"))()
+        loadstring(game:HttpGet("https://loader.somtank.space/loader/univeral-script.lua"))()
 -- สามารถนำไปใส่ตัวรันเล่นได้เลย`;
+
+        // ==========================================
+        // คีย์ปลดล็อคแยกตามหน้า (สำคัญ!)
+        // localStorage แชร์กันทั้งโดเมน ถ้าใช้คีย์เดียวกันทุกหน้า
+        // ปลดล็อคหน้าเดียวจะปลดล็อคหมดทุกหน้า จึงต้องผูกคีย์กับ path ของหน้านั้น
+        // ==========================================
+        const UNLOCK_KEY = 'somtank_unlocked_' + location.pathname.replace(/[^a-z0-9]/gi, '_');
 
         // ==========================================
         // ระบบวิธีที่ 1 (เช็คการสลับหน้าต่าง)
         // ==========================================
         let startTime = 0;
         let isWaitingForReturn = false;
-        let hasLeftPage = false; 
-        let clickTime = 0; 
-        const MIN_WAIT_TIME = 5000; 
-        const GRACE_PERIOD = 2000; 
-        const mainYoutubeLink = "https://www.youtube.com/watch?v=ze8Ogls__TE&t=59s"; 
+        let hasLeftPage = false;
+        let clickTime = 0;
+        const MIN_WAIT_TIME = 5000;
+        const GRACE_PERIOD = 2000;
+
+        // รายชื่อวิดีโอสำหรับวิธีที่ 1 พร้อมน้ำหนัก (weight) กำหนดโอกาสถูกสุ่มออก
+        // ตัวเลข weight ไม่จำเป็นต้องรวมกันเป็น 100 ระบบจะคิดสัดส่วนให้เอง
+        const mainYoutubeVideos = [
+            { url: "https://youtu.be/Dy-QjEso7p4", weight: 65 },
+            { url: "https://youtu.be/DKnYgAqQhUU", weight: 35 },
+            // { url: "https://www.youtube.com/watch?v=RXR34aZC3rI&t=13s", weight: 20 },
+        ];
+
+        // สุ่มเลือกวิดีโอ 1 อันจาก array ตามสัดส่วน weight ที่ตั้งไว้
+        function pickWeightedVideo(videos) {
+            const totalWeight = videos.reduce((sum, v) => sum + v.weight, 0);
+            let rand = Math.random() * totalWeight;
+            for (const v of videos) {
+                if (rand < v.weight) return v.url;
+                rand -= v.weight;
+            }
+            return videos[videos.length - 1].url;
+        }
 
         function redirectToYoutube() {
             clickTime = Date.now();
             isWaitingForReturn = true;
-            hasLeftPage = false; 
-            window.open(mainYoutubeLink, '_blank');
+            hasLeftPage = false;
+            window.open(pickWeightedVideo(mainYoutubeVideos), '_blank');
 
             document.getElementById('modal-initial-content').classList.add('hidden');
             document.getElementById('modal-waiting-content').classList.remove('hidden');
@@ -349,7 +374,7 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
                 if (document.visibilityState === 'hidden') {
                     startTime = now;
                     hasLeftPage = true;
-                } 
+                }
                 else if (document.visibilityState === 'visible') {
                     if (now - clickTime > GRACE_PERIOD && hasLeftPage) {
                         processReturn();
@@ -383,11 +408,7 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
         // ระบบวิธีที่ 2 (5 คลิป ไม่มีเช็คเวลาออก แต่โหลดนาน)
         // ==========================================
         const altVideos = [
-            "https://www.youtube.com/watch?v=74dOyqkVLUo&t=42s",
-            "https://www.youtube.com/watch?v=pbgz5cFim88&lc=Ugw7xaOq9g0Ip7opjC54AaABAg",
-            "https://www.youtube.com/watch?v=Tm9e48h3f9I&t=59s",
-            "https://www.youtube.com/watch?v=GXVy9Id92H4",
-            "https://www.youtube.com/watch?v=QhYDU-nVmlU&lc=UgxFARQn0erGVq4N1cd4AaABAg.AVbFdb_P9MrAVbQDwHbU4l"
+            "https://www.youtube.com/watch?v=4YDYcMyw1WE",
         ];
         let completedAltTasks = 0;
         let isAltTaskProcessing = false; // เพิ่มตัวแปรสำหรับเช็คว่ามีคลิปกำลังตรวจสอบอยู่ไหม
@@ -418,22 +439,22 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
 
         function handleAltTask(index, url, btn) {
             if(btn.disabled) return;
-            
+
             // เช็คว่ามีวิดีโออื่นกำลังตรวจสอบอยู่หรือไม่ (กันคนกดรัว)
             if(isAltTaskProcessing) {
                 // เพิ่มเอฟเฟกต์สั่นที่ปุ่มเพื่อให้รู้ว่าไม่ได้ค้าง
                 btn.classList.add('shake-animation');
                 setTimeout(() => btn.classList.remove('shake-animation'), 300);
-                
+
                 showToast('ระบบกำลังตรวจสอบคลิปก่อนหน้า โปรดรอสักครู่! ⏳', '#ef4444');
                 return;
             }
-            
+
             isAltTaskProcessing = true; // ล็อคไม่ให้กดปุ่มอื่น
 
             // เปิดคลิป
             window.open(url, '_blank');
-            
+
             // เปลี่ยนสถานะปุ่ม
             btn.disabled = true;
             btn.className = 'w-full flex justify-between items-center bg-purple-900/40 text-purple-300 px-4 py-3 rounded-lg border border-purple-500/30 cursor-not-allowed';
@@ -445,10 +466,10 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
             setTimeout(() => {
                 btn.className = 'w-full flex justify-between items-center bg-green-900/30 text-green-400 px-4 py-3 rounded-lg border border-green-500/30';
                 btn.innerHTML = `<span class="font-semibold text-sm">กดไลค์คลิป ${index + 1}</span> <span class="text-xs bg-green-600 text-white px-3 py-1.5 rounded-md">✔ ผ่านแล้ว</span>`;
-                
+
                 isAltTaskProcessing = false; // ปลดล็อคให้กดปุ่มต่อไปได้
                 completedAltTasks++;
-                
+
                 if (completedAltTasks === altVideos.length) {
                     setTimeout(() => {
                         document.getElementById('modal-alt-content').classList.add('hidden');
@@ -465,7 +486,7 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
             document.getElementById('modal-loading-content').classList.remove('hidden');
             let progress = 0;
             const bar = document.getElementById('loading-bar');
-            
+
             const interval = setInterval(() => {
                 progress += Math.random() * 15;
                 if (progress >= 100) {
@@ -487,20 +508,23 @@ loadstring(game:HttpGet("https://loader.somtank.space/loader/infiniteyield-remak
             const modal = document.getElementById('unlock-modal');
             modal.style.transition = 'opacity 0.5s ease';
             modal.style.opacity = '0';
-            
+
             // เอาสคริปต์จริงมาแสดง
             revealRealScript();
 
             setTimeout(() => {
                 modal.style.display = 'none';
                 document.body.classList.remove('modal-open');
-                sessionStorage.setItem('somtank_unlocked', 'true');
+                localStorage.setItem(UNLOCK_KEY, 'true');
             }, 500);
         }
 
         // เช็คสถานะตอนเปิดหน้าเว็บ
         window.onload = function() {
-            if (sessionStorage.getItem('somtank_unlocked') === 'true') {
+            // ล้างคีย์เก่าแบบรวมทุกหน้าทิ้ง (ของเดิมที่ทำให้ปลดล็อคข้ามหน้ากัน)
+            localStorage.removeItem('somtank_unlocked');
+
+            if (localStorage.getItem(UNLOCK_KEY) === 'true') {
                 document.getElementById('unlock-modal').style.display = 'none';
                 document.body.classList.remove('modal-open');
                 revealRealScript(); // ถ้าปลดล็อคแล้ว ให้แสดงโค้ดจริงเลย
